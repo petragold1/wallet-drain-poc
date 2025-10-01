@@ -1,0 +1,18 @@
+# drosera.toml for wallet-drain-trap (PoC)
+ethereum_rpc = "https://ethereum-hoodi-rpc.publicnode.com"
+drosera_rpc  = "https://relay.hoodi.drosera.io"
+drosera_address = "0x91cB447BaFc6e0EA0F4Fe056F5a9b1F14bb06e5D"
+
+[traps]
+
+[traps.wallet_drain_protection]
+path = "out/WalletDrainTrap.sol/WalletDrainTrap.json"
+response_contract = "0xEc715e60474AD8BffB680Bdbbe09cEb2a66a744C"
+response_function = "respond()"
+cooldown_period_blocks = 50
+min_number_of_operators = 1
+max_number_of_operators = 2
+block_sample_size = 10
+private_trap = true
+whitelist = ["0xE52cA26d0db661791158549068483C379B209740"]
+address = "0xD4454195c4085Dbf866399166886D6f0E44EFaDF"
