@@ -1,0 +1,4 @@
+[dotenv@17.2.3] injecting env (2) from .env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
+RPC: https://ethereum-hoodi-rpc.publicnode.com
+Trap: 0xD4454195c4085Dbf866399166886D6f0E44EFaDF
+Contract found — bytecode size: 846 bytes

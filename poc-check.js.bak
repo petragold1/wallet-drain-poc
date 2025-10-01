@@ -1,0 +1,85 @@
+require('dotenv').config();
+const ethersImport = require('ethers');
+
+const RPC = process.env.RPC_URL;
+const TRAP = process.env.TRAP_ADDRESS;
+
+if (!RPC || !TRAP) {
+  console.error("Missing RPC_URL or TRAP_ADDRESS in .env");
+  process.exit(1);
+}
+
+// small helper to support ethers v5 and v6 provider APIs
+function makeProvider(rpcUrl) {
+  // ethers v5: ethers.providers.JsonRpcProvider
+  if (ethersImport.providers && ethersImport.providers.JsonRpcProvider) {
+    return new ethersImport.providers.JsonRpcProvider(rpcUrl);
+  }
+  // ethers v6: ethers.JsonRpcProvider
+  if (ethersImport.JsonRpcProvider) {
+    return new ethersImport.JsonRpcProvider(rpcUrl);
+  }
+  throw new Error("Unsupported ethers version: cannot find JsonRpcProvider");
+}
+
+const ABI = [
+  { "inputs": [], "name": "collect", "outputs":[{"internalType":"bytes","name":"","type":"bytes"}], "stateMutability":"view","type":"function" },
+  { "inputs":[{"internalType":"bytes[]","name":"data","type":"bytes[]"}], "name":"shouldRespond", "outputs":[{"internalType":"bool","name":"","type":"bool"},{"internalType":"bytes","name":"","type":"bytes"}], "stateMutability":"pure","type":"function" }
+];
+
+async function main() {
+  const provider = makeProvider(RPC);
+  console.log("RPC:", RPC);
+  console.log("Trap:", TRAP);
+
+  const contract = new ethersImport.Contract(TRAP, ABI, provider);
+
+  try {
+    console.log("\\nCalling collect()...");
+    const collectBytes = await contract.collect();
+    console.log("collect() raw bytes (hex):", collectBytes);
+
+    try {
+      // try decoding as (uint256,string)
+      const decoded = ethersImport.utils.defaultAbiCoder.decode(['uint256','string'], collectBytes);
+      const balance = decoded[0];
+      const tag = decoded[1];
+      console.log("Decoded collect():");
+      console.log(" balance (wei):", balance.toString ? balance.toString() : String(balance));
+      // formatEther exists in both versions (utils.formatEther)
+      try {
+        console.log(" balance (ETH) :", ethersImport.utils.formatEther(balance));
+      } catch (e) {
+        // fallback conversion if needed
+        console.log(" balance (ETH) : (couldn't format with utils.formatEther)");
+      }
+      console.log(" tag:", tag);
+    } catch (err) {
+      console.warn("Could not decode collect() output as (uint256,string):", err.message);
+    }
+
+    console.log("\\nCalling shouldRespond([collectBytes])...");
+    const res = await contract.shouldRespond([collectBytes]);
+    // res may be an array-like (v5) or object - we normalize
+    const shouldRespond = Array.isArray(res) ? res[0] : res.shouldRespond ?? res[0];
+    const responseData = Array.isArray(res) ? res[1] : res.responseData ?? res[1];
+    console.log("shouldRespond:", shouldRespond);
+    console.log("responseData (hex):", responseData);
+
+    if (shouldRespond) {
+      try {
+        const dec = ethersImport.utils.defaultAbiCoder.decode(['string'], responseData);
+        console.log("Decoded responseData as string:", dec[0]);
+      } catch (err) {
+        console.warn("Could not decode responseData as string:", err.message);
+      }
+    } else {
+      console.log("Trap decided NOT to respond at this time.");
+    }
+
+  } catch (err) {
+    console.error("Error calling contract:", err && err.message ? err.message : err);
+  }
+}
+
+main().catch(e => { console.error(e); process.exit(1); });

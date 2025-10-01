@@ -1,0 +1,5 @@
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+RPC: https://ethereum-hoodi-rpc.publicnode.com
+Trap: 0xD4454195c4085Dbf866399166886D6f0E44EFaDF
+Contract found — bytecode size: 846 bytes
+Error calling collect(): execution reverted (no data present; likely require(false) occurred (action="call", data="0x", reason="require(false)", transaction={ "data": "0xe5225381", "to": "0xD4454195c4085Dbf866399166886D6f0E44EFaDF" }, invocation=null, revert=null, code=CALL_EXCEPTION, version=6.15.0)
