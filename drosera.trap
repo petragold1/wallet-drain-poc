@@ -1,0 +1,47 @@
+# drosera.trap
+# Human-readable metadata for the Wallet Drain Trap PoC
+# (Put this at the repo root: ~/wallet-drain-poc/drosera.trap)
+
+name = "wallet_drain_protection"
+version = "0.1.0"
+description = """
+Wallet drain protection trap (PoC).
+Watches a single wallet and alerts (via a response contract)
+if the wallet balance falls below a configured threshold.
+"""
+
+author = "Petragold1 (Discord: annaastacia)"
+license = "MIT"
+network = "Hoodi testnet"
+
+# Deployed contract addresses (the ones you deployed)
+deployed_trap_contract = "0xa66bc6C459e8Feec9f76e2831825A6aAFA55F980"   # contract deployed with forge
+onchain_trap_config    = "0xD4454195c4085Dbf866399166886D6f0E44EFaDF"   # trap config created with drosera apply
+response_contract      = "0xEc715e60474AD8BffB680Bdbbe09cEb2a66a744C"   # contract that executes respond()
+
+# Roles & addresses
+owner_address    = "0xE52cA26d0db661791158549068483C379B209740"
+operator_address = "0xE52cA26d0db661791158549068483C379B209740"
+
+# Artifacts (relative paths in repo)
+artifact_json = "out/WalletDrainTrap.sol/WalletDrainTrap.json"
+drosera_toml  = "drosera.toml"
+
+# PoC run instructions (short, meant for reviewers)
+# Replace <RPC> with: https://ethereum-hoodi-rpc.publicnode.com
+poc = [
+  "1) Query collect() as operator and save output:",
+  "   cast call 0xa66bc6C459e8Feec9f76e2831825A6aAFA55F980 'collect()(bytes)' --from 0xE52cA26d0db661791158549068483C379B209740 --rpc-url https://ethereum-hoodi-rpc.publicnode.com > collect.hex",
+  "2) Decode the collect() bytes locally:",
+  "   node decode-collect.js \"$(cat collect.hex)\"",
+  "   (or) node decode-collect.js \"$(cast call 0xa66bc6C459e8Feec9f76e2831825A6aAFA55F980 'collect()(bytes)' --from 0xE52cA26d0db661791158549068483C379B209740 --rpc-url https://ethereum-hoodi-rpc.publicnode.com)\"",
+  "3) Confirm shouldRespond behavior (supply collected bytes):",
+  "   cast call 0xa66bc6C459e8Feec9f76e2831825A6aAFA55F980 \"shouldRespond(bytes[])(bool,bytes)\" --rpc-url https://ethereum-hoodi-rpc.publicnode.com --args $(cat collect.hex)"
+]
+
+notes = """
+Replace addresses above with exact deployed addresses if different.
+This repository contains: drosera.toml, drosera.trap, poc-check.js, decode-collect.js,
+collect.hex and other small artifacts used to demonstrate the trap.
+Do NOT include private keys or secrets in the repo.
+"""
