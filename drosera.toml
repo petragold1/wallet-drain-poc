@@ -1,4 +1,4 @@
-# drosera.toml - Wallet Drain Protection Trap (clean version)
+# drosera.toml - Wallet Drain Protection Trap (final revised)
 
 ethereum_rpc = "https://ethereum-hoodi-rpc.publicnode.com"
 drosera_rpc  = "https://relay.hoodi.drosera.io"
@@ -7,22 +7,22 @@ drosera_address = "0x91cB447BaFc6e0EA0F4Fe056F5a9b1F14bb06e5D"
 [traps]
 
 [traps.wallet_drain_protection]
-# Path to your compiled trap
+# Compiled artifact path (case-sensitive)
 path = "out/WalletDrainTrap.sol/WalletDrainTrap.json"
 
-# The response contract (must implement respond())
+# The on-chain responder contract and function
 response_contract = "0xEc715e60474AD8BffB680Bdbbe09cEb2a66a744C"
 response_function = "respond()"
 
-# Sample + execution parameters
+# Execution parameters (tuned for stability)
 cooldown_period_blocks = 50
 min_number_of_operators = 1
 max_number_of_operators = 2
 block_sample_size = 10
 private_trap = true
 
-# Whitelist should include your operator(s), not the watched wallet
+# Operator whitelist
 whitelist = ["0xE52cA26d0db661791158549068483C379B209740"]
 
-# Trap configuration contract on-chain (if used)
+# Trap configuration contract (on-chain)
 address = "0xD4454195c4085Dbf866399166886D6f0E44EFaDF"
